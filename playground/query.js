@@ -25,3 +25,18 @@ User.findById(id).then((doc)=>{
 },(e)=>{
     console.log(e)
 })
+
+//remove all
+Todo.remove({})((result)=>{
+    console.log(result)
+})
+
+//gets the doc back and removes from DB
+Todo.findOneAndRemove({})((result)=>{
+    console.log(result)
+})
+
+//gets the doc back and removes from DB
+Todo.findByIdAndRemove('asdf')((result)=>{
+    console.log(result)
+})
