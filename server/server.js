@@ -1,6 +1,7 @@
 //contains express and bodyparser, routes, app.listen
 //requires mongoose, Todo and User from db and models
 
+const _ = require('lodash');
 
 var { mongoose } = require('./db/mongoose')
 var { Todo } = require('./models/todo')
@@ -65,11 +66,44 @@ app.delete('/todos/:id', (req, res) => {
         if (!result) {
             return res.status(404).send()
         }
-        res.send(result)
+        res.send({ result })
     }).catch((e) => {
         res.status(400).send()
     })
 })
+
+app.patch('/todos/:id', (req, res) => {
+    var id = req.params.id;
+    var body = _.pick(req.body, ['text', 'completed']); //only takes these properties, not completedAt
+
+    //valid id?
+    if (!ObjectID.isValid(req.params.id)) {
+        return res.status(404).send()
+    }
+
+    //if boolean and completed = true
+    if ((_.isBoolean) && body.completed) {
+        body.completedAt = new Date().getTime();
+    } 
+    else 
+    {
+        body.completed = false;
+        body.completedAt = null;
+    }
+
+    //actual update happens here
+    //1st arg - id, 2nd is body, 3rd is a parameter that says return new updated obj
+    Todo.findByIdAndUpdate(id, { $set: body }, { new: true }).then((todo) => {
+        if (!todo) {
+            return res.status(404).send()
+        }
+        res.send({ todo })
+    }).catch((e) => {
+        rest.statsus(400).send()
+    })
+
+});
+
 
 
 
